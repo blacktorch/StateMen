@@ -119,5 +119,7 @@ public class Behavior {
                 break;
         }
 
+        Logger.logRun(brain, action);
+
     }
 }

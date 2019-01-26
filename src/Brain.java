@@ -26,6 +26,7 @@ class Brain extends Thread implements SensorInput {
     private Action action;
     private List<Behavior> behaviors;
     private States state;
+    private long runNumber;
 
     //---------------------------------------------------------------------------
     // This constructor:
@@ -40,6 +41,7 @@ class Brain extends Thread implements SensorInput {
         this.number = number;
         this.playMode = playMode;
         this.behaviors = behaviors;
+        this.runNumber = 0;
         start();
     }
 
@@ -57,14 +59,14 @@ class Brain extends Thread implements SensorInput {
                 }
             }
 
-            System.out.println(state.getStateName());
-
             // sleep one step to ensure that we will not send
             // two commands in one cycle.
             try {
                 Thread.sleep(2 * SoccerParams.simulator_step);
             } catch (Exception e) {
             }
+
+            runNumber++;
         }
         reactor.bye();
     }
@@ -94,6 +96,14 @@ class Brain extends Thread implements SensorInput {
 
     public void setAgentState(States state){
         this.state = state;
+    }
+
+    public int getNumber() {
+        return number;
+    }
+
+    public long getRunNumber(){
+        return runNumber;
     }
 
 
