@@ -85,6 +85,8 @@ public class PlayView {
         FAR_FROM_GOAL,
         HAS_BALL,
         TEAM_MATE_HAS_BALL,
-        FACING_MY_GOAL
+        FACING_MY_GOAL,
+        NOT_WITH_BALL,
+        GOAL_NOT_VISIBLE
     }
 }

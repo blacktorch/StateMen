@@ -1,24 +1,24 @@
 public class Action {
 
-    private String team;
-    private SendCommand actor;
-    private Memory memory;
-    private char side;
+//    private String team;
+//    private SendCommand actor;
+//    private Memory memory;
+//    private char side;
 
-    public Action(SendCommand reactor, Memory memory, String team, char side) {
-        this.actor = reactor;
-        this.memory = memory;
-        this.side = side;
-        this.team = team;
+    private Action(SendCommand reactor, Memory memory, String team, char side) {
+//        this.actor = reactor;
+//        this.memory = memory;
+//        this.side = side;
+//        this.team = team;
     }
 
-    public void lookAround() {
+    public static void lookAround(SendCommand actor, Memory memory) {
         // If you don't know where is ball then find it
         actor.turn(40);
         memory.waitForNewInfo();
     }
 
-    public void dashTowardsBall() {
+    public static void dashTowardsBall(SendCommand actor, Memory memory, String team) {
         ObjectInfo ball = memory.getObject(Constants.BALL);
         PlayerInfo player = (PlayerInfo)memory.getObject(Constants.PLAYER);
         if (ball.direction != 0) {
@@ -30,11 +30,11 @@ public class Action {
         }
     }
 
-    public void kickTowardsGoal() {
+    public static void kickTowardsGoal(SendCommand actor, Memory memory, char side) {
         actor.kick(100, SoccerUtil.getOpponentsGoal(memory, side).direction);
     }
 
-    public void passBall() {
+    public static void passBall(SendCommand actor, Memory memory) {
         PlayerInfo player = (PlayerInfo) memory.getObject(Constants.PLAYER);
 
         if (player != null){
@@ -44,12 +44,12 @@ public class Action {
                 actor.kick(5 * player.distance, player.direction);
             }
         } else {
-            lookAround();
+            lookAround(actor, memory);
         }
 
     }
 
-    public void dashTowardsGoal(){
+    public static void dashTowardsGoal(SendCommand actor, Memory memory, String team, char side){
         ObjectInfo goal = SoccerUtil.getOpponentsGoal(memory, side);
         ObjectInfo ball = memory.getObject(Constants.BALL);
         if (goal.direction != 0){
@@ -59,7 +59,7 @@ public class Action {
             if (new PlayView(memory, team, side).hasBall()){
                 actor.kick(20, goal.direction);
             } else if (ball != null){
-                dashTowardsBall();
+                dashTowardsBall(actor,memory,team);
             }
         }
     }

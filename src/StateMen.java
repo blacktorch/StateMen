@@ -271,21 +271,26 @@ class StateMen implements SendCommand {
         try {
            String root = SoccerUtil.toString(StateMen.class.getResourceAsStream(File.separator + "Behavior"+ File.separator + "behavior.txt"));
            String[] behaviorArray = root.split("\n");
+           States state = null;
            for (String behavior : behaviorArray){
-               List<PlayView.Environments> environmentsList = new ArrayList<>();
-               Action.Actions action;
-               String[] EandA = behavior.split(":");
-               if (EandA[0].contains(",")){
-                   String[] environments = EandA[0].split(",");
-                   for (String environment : environments){
-                       environmentsList.add(PlayView.Environments.valueOf(environment));
-                   }
-               } else {
-                   environmentsList.add(PlayView.Environments.valueOf(EandA[0]));
-               }
-               action = Action.Actions.valueOf(EandA[1]);
 
-               behaviors.add(new Behavior(environmentsList, action));
+               PlayView.Environments environments;
+               Action.Actions action;
+               String[] stateAndResult = behavior.split("->");
+               String[] internalAndExternalState = stateAndResult[0].split(":");
+               String[] actionAndNewState = stateAndResult[1].split(":");
+
+               if (internalAndExternalState[0].equals(Constants.HAS_BALL)){
+                   state = new StateHasBall();
+               } else if (internalAndExternalState[0].equals(Constants.NOT_WITH_BALL)){
+                   state = new StateNotWithBall();
+               }
+
+               environments = PlayView.Environments.valueOf(internalAndExternalState[1]);
+
+               action = Action.Actions.valueOf(actionAndNewState[0]);
+
+               behaviors.add(new Behavior(state, environments, action));
            }
 
            return behaviors;
@@ -303,7 +308,7 @@ class StateMen implements SendCommand {
         } catch (Exception ex){
             /**-----------------------------------------------------------------------**/
             System.out.println("=================================================     ");
-            System.out.println("     Error Loading Behavior File                      ");
+            System.err.println("     Error Loading Behavior File                      ");
             System.out.println("     --------------------------------------------     ");
             System.out.println("     Behavior file not found or formatted wrongly     ");
             System.out.println("     Find below how to format it properly             ");

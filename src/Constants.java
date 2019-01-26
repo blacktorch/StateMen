@@ -14,4 +14,6 @@ public final class Constants {
     public static final char RIGHT = 'r';
     public static final char TOP = 't';
     public static final char BOTTOM = 'b';
+    public static final String HAS_BALL = "HAS_BALL";
+    public static final String NOT_WITH_BALL = "NOT_WITH_BALL";
 }

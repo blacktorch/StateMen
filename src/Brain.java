@@ -25,6 +25,7 @@ class Brain extends Thread implements SensorInput {
     private String team;
     private Action action;
     private List<Behavior> behaviors;
+    private States state;
 
     //---------------------------------------------------------------------------
     // This constructor:
@@ -38,7 +39,6 @@ class Brain extends Thread implements SensorInput {
         this.side = side;
         this.number = number;
         this.playMode = playMode;
-        action = new Action(this.reactor,this.memory,this.team,this.side);
         this.behaviors = behaviors;
         start();
     }
@@ -52,10 +52,12 @@ class Brain extends Thread implements SensorInput {
         while (!timeOver) {
 
             for (Behavior behavior : behaviors){
-                if (behavior.isInCurrentEnvironment(memory, team, side)){
-                    behavior.performAction(action);
+                if (behavior.isInCurrentState(this)){
+                    behavior.performAction();
                 }
             }
+
+            System.out.println(state.getStateName());
 
             // sleep one step to ensure that we will not send
             // two commands in one cycle.
@@ -69,7 +71,30 @@ class Brain extends Thread implements SensorInput {
 
 
     //===========================================================================
-    // Here are suporting functions for implement logic
+    // Here are supporting functions for implement logic
+    public SendCommand getReactor(){
+        return reactor;
+    }
+
+    public char getSide(){
+        return side;
+    }
+
+    public Memory getMemory(){
+        return memory;
+    }
+
+    public String getTeam(){
+        return team;
+    }
+
+    public States getAgentState(){
+        return state;
+    }
+
+    public void setAgentState(States state){
+        this.state = state;
+    }
 
 
     //===========================================================================

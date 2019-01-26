@@ -1,20 +1,22 @@
-import java.util.List;
 
 public class Behavior {
 
-    private List<PlayView.Environments> environments;
+    private PlayView.Environments environments;
     private Action.Actions action;
+    private States state;
+    private Brain brain;
 
-    public Behavior(List<PlayView.Environments> environments, Action.Actions action){
+    public Behavior(States state, PlayView.Environments environments, Action.Actions action){
+        this.state = state;
         this.environments = environments;
         this.action = action;
     }
 
-    public List<PlayView.Environments> getEnvironments() {
+    public PlayView.Environments getEnvironments() {
         return environments;
     }
 
-    public void setEnvironments(List<PlayView.Environments> environments) {
+    public void setEnvironments(PlayView.Environments environments) {
         this.environments = environments;
     }
 
@@ -26,61 +28,92 @@ public class Behavior {
         this.action = action;
     }
 
-    public boolean isInCurrentEnvironment(Memory memory, String team, char side){
-        PlayView playView = new PlayView(memory, team, side);
-        boolean[] environs = new boolean[environments.size()];
-        int i = 0;
+    public boolean isInCurrentState(Brain brain){
+        this.brain = brain;
+        PlayView playView = new PlayView(brain.getMemory(), brain.getTeam(), brain.getSide());
 
-        for(PlayView.Environments environment : environments){
-            switch (environment){
-                case HAS_BALL:
-                    environs[i] = playView.hasBall();
-                    break;
+        boolean[] environs = new boolean[2];
+
+        if (state.getStateName().equals(Constants.HAS_BALL) && playView.hasBall()){
+            environs[0] = true;
+            switch (environments){
                 case CAN_SEE_BALL:
-                    environs[i] = playView.canSeeBall();
+                    environs[1] = playView.canSeeBall();
                     break;
                 case FAR_FROM_GOAL:
-                    environs[i] = playView.farFromGoal();
+                    environs[1] = playView.farFromGoal();
                     break;
                 case BALL_NOT_VISIBLE:
-                    environs[i] = !playView.canSeeBall();
+                    environs[1] = !playView.canSeeBall();
                     break;
                 case CAN_SEE_GOAL:
-                    environs[i] = playView.canSeeGoal();
+                    environs[1] = playView.canSeeGoal();
                     break;
                 case CAN_SEE_TEAM_MATE:
-                    environs[i] = playView.canSeeTeamMate();
+                    environs[1] = playView.canSeeTeamMate();
                     break;
                 case TEAM_MATE_HAS_BALL:
-                    environs[i] = playView.teamMateHasBall();
+                    environs[1] = playView.teamMateHasBall();
                     break;
                 case FACING_MY_GOAL:
-                    environs[i] = playView.facingMyGoal();
+                    environs[1] = playView.facingMyGoal();
+                    break;
+                case GOAL_NOT_VISIBLE:
+                    environs[1] = !playView.canSeeGoal();
                     break;
             }
-            i++;
+
+        } else if (state.getStateName().equals(Constants.NOT_WITH_BALL) && !playView.hasBall()){
+            environs[0] = true;
+            switch (environments){
+                case CAN_SEE_BALL:
+                    environs[1] = playView.canSeeBall();
+                    break;
+                case FAR_FROM_GOAL:
+                    environs[1] = playView.farFromGoal();
+                    break;
+                case BALL_NOT_VISIBLE:
+                    environs[1] = !playView.canSeeBall();
+                    break;
+                case CAN_SEE_GOAL:
+                    environs[1] = playView.canSeeGoal();
+                    break;
+                case CAN_SEE_TEAM_MATE:
+                    environs[1] = playView.canSeeTeamMate();
+                    break;
+                case TEAM_MATE_HAS_BALL:
+                    environs[1] = playView.teamMateHasBall();
+                    break;
+                case FACING_MY_GOAL:
+                    environs[1] = playView.facingMyGoal();
+                    break;
+                case GOAL_NOT_VISIBLE:
+                    environs[1] = !playView.canSeeGoal();
+                    break;
+            }
+
         }
 
         return SoccerUtil.areAllTrue(environs);
     }
 
-    public void performAction(Action todo){
+    public void performAction(){
 
         switch (action){
             case PASS_BALL:
-                todo.passBall();
+                brain.setAgentState(state.pass(brain));
                 break;
             case LOOK_AROUND:
-                todo.lookAround();
+                brain.setAgentState(state.lookAround(brain));
                 break;
             case DASH_TOWARDS_BALL:
-                todo.dashTowardsBall();
+                brain.setAgentState(state.getBall(brain));
                 break;
             case DASH_TOWARDS_GOAL:
-                todo.dashTowardsGoal();
+                brain.setAgentState(state.dashTowardsGoal(brain));
                 break;
             case KICK_TOWARDS_GOAL:
-                todo.kickTowardsGoal();
+                brain.setAgentState(state.shoot(brain));
                 break;
             case DO_NOTHING:
                 break;
