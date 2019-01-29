@@ -308,17 +308,12 @@ class StateMen implements SendCommand {
         } catch (Exception ex){
             /**-----------------------------------------------------------------------**/
             System.out.println("=================================================     ");
-            System.err.println("     Error Loading Behavior File                      ");
+            System.out.println("     Error Loading Behavior File                      ");
             System.out.println("     --------------------------------------------     ");
             System.out.println("     Behavior file not found or formatted wrongly     ");
             System.out.println("     Find below how to format it properly             ");
             System.out.println("     Example:                                         ");
-            System.out.println("     ENVIRONMENT_1,ENVIRONMENT_2:ACTION               ");
-            System.out.println("     You could also load a single Environment per behavior");
-            System.out.println("     Example:                                         ");
-            System.out.println("     ENVIRONMENT_1:ACTION                             ");
-            System.out.println("     Note:                                            ");
-            System.out.println("     You can only MAP a SINGLE ACTION to a set of ENVIRONMENTS");
+            System.out.println("     INTERNAL_STATE_1:ENVIRONMENT_STATE->ACTION:INTERNAL_STATE_2");
         }
 
         return null;
